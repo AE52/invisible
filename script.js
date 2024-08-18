@@ -6,6 +6,8 @@ const translations = {
         makePrivate: "Make Selected Private",
         makePublic: "Make Selected Public",
         delete: "Delete Selected",
+        selectAll: "Select All",
+        deselectAll: "Deselect All",
         publicHeading: "Public Repos",
         privateHeading: "Private Repos",
         successPrivate: "successfully made private.",
@@ -20,6 +22,8 @@ const translations = {
         makePrivate: "Seçilenleri Private Yap",
         makePublic: "Seçilenleri Public Yap",
         delete: "Seçilenleri Sil",
+        selectAll: "Tümünü Seç",
+        deselectAll: "Seçimi Kaldır",
         publicHeading: "Public Repos",
         privateHeading: "Private Repos",
         successPrivate: "başarıyla private yapıldı.",
@@ -41,6 +45,7 @@ function changeLanguage(lang) {
     document.querySelector('button[onclick="bulkAction(\'private\')"]').textContent = texts.makePrivate;
     document.querySelector('button[onclick="bulkAction(\'public\')"]').textContent = texts.makePublic;
     document.querySelector('button[onclick="bulkAction(\'delete\')"]').textContent = texts.delete;
+    document.getElementById('selectAllButton').textContent = texts.selectAll;
     document.getElementById('public-heading').textContent = texts.publicHeading;
     document.getElementById('private-heading').textContent = texts.privateHeading;
 }
@@ -50,8 +55,8 @@ async function fetchRepos() {
     const token = document.getElementById('token').value;
     const publicReposDiv = document.getElementById('public-repos');
     const privateReposDiv = document.getElementById('private-repos');
-    publicReposDiv.innerHTML = ''; // Clear previous results
-    privateReposDiv.innerHTML = ''; // Clear previous results
+    publicReposDiv.innerHTML = '';
+    privateReposDiv.innerHTML = '';
 
     try {
         const response = await fetch('https://api.github.com/user/repos?per_page=100', {
@@ -64,9 +69,10 @@ async function fetchRepos() {
 
         repos.forEach(repo => {
             const repoDiv = document.createElement('div');
-            repoDiv.className = 'repo';
+            repoDiv.classList.add('repo');
+            repoDiv.classList.add(repo.private ? 'private' : 'public'); // Add class based on visibility
             repoDiv.innerHTML = `
-                <input type="checkbox" id="repo-${repo.name}" data-reponame="${repo.name}" ${repo.private ? 'checked' : ''}>
+                <input type="checkbox" data-reponame="${repo.name}" id="repo-${repo.name}">
                 <label for="repo-${repo.name}">${repo.name}</label>
             `;
 
@@ -81,18 +87,18 @@ async function fetchRepos() {
     }
 }
 
+
 async function bulkAction(action) {
+    const checkedBoxes = document.querySelectorAll('input[type="checkbox"]:checked');
     const username = document.getElementById('username').value;
     const token = document.getElementById('token').value;
-    const repos = document.querySelectorAll('.repo input:checked');
 
-    const promises = Array.from(repos).map(async repoInput => {
-        const repoName = repoInput.dataset.reponame;
-        const url = `https://api.github.com/repos/${username}/${repoName}`;
+    for (let checkbox of checkedBoxes) {
+        const repoName = checkbox.dataset.reponame;
 
         try {
             if (action === 'private') {
-                await fetch(url, {
+                await fetch(`https://api.github.com/repos/${username}/${repoName}`, {
                     method: 'PATCH',
                     headers: {
                         'Authorization': `Basic ${btoa(username + ':' + token)}`,
@@ -101,9 +107,9 @@ async function bulkAction(action) {
                     },
                     body: JSON.stringify({ private: true })
                 });
-                console.log(`${repoName} ${translations['en'].successPrivate}`);
+                console.log(`Repo ${repoName} ${translations['en'].successPrivate}`);
             } else if (action === 'public') {
-                await fetch(url, {
+                await fetch(`https://api.github.com/repos/${username}/${repoName}`, {
                     method: 'PATCH',
                     headers: {
                         'Authorization': `Basic ${btoa(username + ':' + token)}`,
@@ -112,22 +118,39 @@ async function bulkAction(action) {
                     },
                     body: JSON.stringify({ private: false })
                 });
-                console.log(`${repoName} ${translations['en'].successPublic}`);
+                console.log(`Repo ${repoName} ${translations['en'].successPublic}`);
             } else if (action === 'delete') {
-                await fetch(url, {
+                await fetch(`https://api.github.com/repos/${username}/${repoName}`, {
                     method: 'DELETE',
                     headers: {
                         'Authorization': `Basic ${btoa(username + ':' + token)}`,
                         'Accept': 'application/vnd.github.v3+json'
                     }
                 });
-                console.log(`${repoName} ${translations['en'].successDelete}`);
+                console.log(`Repo ${repoName} ${translations['en'].successDelete}`);
             }
         } catch (error) {
-            console.error(`Error performing ${action} on ${repoName}:`, error);
+            console.error(`Error performing ${action} on repo ${repoName}:`, error);
         }
-    });
+    }
 
-    await Promise.all(promises);
     alert(translations[document.getElementById('language').value].bulkActionCompleted);
+    fetchRepos(); // Refresh the lists after bulk actions
 }
+
+
+let allSelected = false;
+
+function toggleSelectAll() {
+    const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+    const selectAllButton = document.getElementById('selectAllButton');
+    allSelected = !allSelected;
+    
+    checkboxes.forEach(checkbox => checkbox.checked = allSelected);
+    
+    const lang = document.getElementById('language').value;
+    selectAllButton.textContent = allSelected ? translations[lang].deselectAll : translations[lang].selectAll;
+}
+
+// Initial language setup
+changeLanguage('tr');
