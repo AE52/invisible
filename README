@@ -1,0 +1,79 @@
+# GitHub Repo Manager
+
+## Overview
+GitHub Repo Manager is a web application designed to help you manage your GitHub repositories. You can easily fetch your repositories, change their visibility (public/private), and delete them in bulk.
+
+## Features
+- **Fetch Repositories:** Get a list of your GitHub repositories.
+- **Change Visibility:** Bulk change the visibility of selected repositories between public and private.
+- **Delete Repositories:** Delete selected repositories in bulk.
+- **Language Support:** Supports English and Turkish.
+
+## Getting Started
+
+### Prerequisites
+- A GitHub account with a personal access token.
+- Basic knowledge of HTML and JavaScript.
+
+### Usage
+1. **Enter GitHub Credentials:**
+   - Enter your GitHub username and personal access token in the designated fields.
+
+2. **Fetch Repositories:**
+   - Click on "Fetch Repos" to retrieve your repositories.
+
+3. **Select Repositories:**
+   - Check the boxes next to the repositories you want to manage.
+
+4. **Perform Actions:**
+   - Use the buttons to change the visibility (Public/Private) or delete selected repositories.
+   - Click "Select All" to select all repositories.
+
+5. **Change Language:**
+   - Choose your preferred language from the language selector.
+
+## License
+This project is licensed under the MIT License.
+
+## Contact
+For any questions or issues, please contact [eren.sistemmap@gmail.com](mailto:eren.sistemmap@gmail.com).
+
+# GitHub Repo Yönetici
+
+## Genel Bakış
+GitHub Repo Yönetici, GitHub repositorilerinizi yönetmenize yardımcı olan bir web uygulamasıdır. Repositorilerinizi kolayca getirebilir, görünürlüklerini (açık/özel) topluca değiştirebilir ve topluca silebilirsiniz.
+
+## Özellikler
+- **Repo Getirme:** GitHub repositorilerinizi listeleyin.
+- **Görünürlük Değiştirme:** Seçili repositorilerin görünürlüğünü topluca açık ve özel olarak değiştirin.
+- **Repo Silme:** Seçili repositorileri topluca silin.
+- **Dil Desteği:** İngilizce ve Türkçe desteği sağlar.
+
+## Başlarken
+
+### Gereksinimler
+- GitHub hesabı ve kişisel erişim tokeni.
+- Temel HTML ve JavaScript bilgisi.
+
+### Kullanım
+1. **GitHub Kimlik Bilgilerini Girin:**
+   - GitHub kullanıcı adınızı ve kişisel erişim tokeninizi ilgili alanlara girin.
+
+2. **Repositorileri Getirin:**
+   - "Repoları Getir" butonuna tıklayarak repositorilerinizi alın.
+
+3. **Repositorileri Seçin:**
+   - Yönetmek istediğiniz repositorilerin yanındaki kutuları işaretleyin.
+
+4. **Eylemleri Gerçekleştirin:**
+   - Seçili repositorilerin görünürlüğünü (Açık/Özel) değiştirmek veya silmek için butonları kullanın.
+   - "Tümünü Seç" butonuna tıklayarak tüm repositorileri seçin.
+
+5. **Dil Değiştir:**
+   - Tercih ettiğiniz dili dil seçicisinden seçin.
+
+## Lisans
+Bu proje MIT Lisansı altında lisanslanmıştır.
+
+## İletişim
+Herhangi bir soru veya sorun için lütfen [eren.sistemmap@gmail.com](mailto:eren.sistemmap@gmail.com) adresiyle iletişime geçin.
