@@ -99,10 +99,13 @@ async function bulkAction(action) {
     try {
         for (let checkbox of checkedBoxes) {
             const repoName = checkbox.dataset.reponame;
+            const repoDiv = checkbox.parentElement;
+            const repoClass = repoDiv.classList.contains('private') ? 'private' : 'public';
 
             try {
+                let response;
                 if (action === 'private') {
-                    await fetch(`https://api.github.com/repos/${username}/${repoName}`, {
+                    response = await fetch(`https://api.github.com/repos/${username}/${repoName}`, {
                         method: 'PATCH',
                         headers: {
                             'Authorization': `Basic ${btoa(username + ':' + token)}`,
@@ -112,8 +115,14 @@ async function bulkAction(action) {
                         body: JSON.stringify({ private: true })
                     });
                     console.log(`Repo ${repoName} ${translations['en'].successPrivate}`);
+                    // Move repo to private list manually
+                    if (repoClass === 'public') {
+                        document.getElementById('private-repos').appendChild(repoDiv);
+                        repoDiv.classList.remove('public');
+                        repoDiv.classList.add('private');
+                    }
                 } else if (action === 'public') {
-                    await fetch(`https://api.github.com/repos/${username}/${repoName}`, {
+                    response = await fetch(`https://api.github.com/repos/${username}/${repoName}`, {
                         method: 'PATCH',
                         headers: {
                             'Authorization': `Basic ${btoa(username + ':' + token)}`,
@@ -123,6 +132,12 @@ async function bulkAction(action) {
                         body: JSON.stringify({ private: false })
                     });
                     console.log(`Repo ${repoName} ${translations['en'].successPublic}`);
+                    // Move repo to public list manually
+                    if (repoClass === 'private') {
+                        document.getElementById('public-repos').appendChild(repoDiv);
+                        repoDiv.classList.remove('private');
+                        repoDiv.classList.add('public');
+                    }
                 } else if (action === 'delete') {
                     await fetch(`https://api.github.com/repos/${username}/${repoName}`, {
                         method: 'DELETE',
@@ -132,6 +147,8 @@ async function bulkAction(action) {
                         }
                     });
                     console.log(`Repo ${repoName} ${translations['en'].successDelete}`);
+                    // Remove repo from the list manually
+                    repoDiv.remove();
                 }
             } catch (error) {
                 console.error(`Error performing ${action} on repo ${repoName}:`, error);
@@ -139,9 +156,6 @@ async function bulkAction(action) {
         }
 
         alert(translations[document.getElementById('language').value].bulkActionCompleted);
-        
-        // Wait for 3 seconds before refreshing the repo list
-        setTimeout(fetchRepos, 3000);
     } catch (error) {
         console.error('Error performing bulk action:', error);
     } finally {
@@ -149,6 +163,8 @@ async function bulkAction(action) {
         buttons.forEach(button => button.disabled = false);
     }
 }
+
+
 
 let allSelected = false;
 
