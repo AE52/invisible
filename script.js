@@ -139,7 +139,9 @@ async function bulkAction(action) {
         }
 
         alert(translations[document.getElementById('language').value].bulkActionCompleted);
-        fetchRepos(); // Refresh the lists after bulk actions
+        
+        // Wait for 3 seconds before refreshing the repo list
+        setTimeout(fetchRepos, 3000);
     } catch (error) {
         console.error('Error performing bulk action:', error);
     } finally {
@@ -147,12 +149,6 @@ async function bulkAction(action) {
         buttons.forEach(button => button.disabled = false);
     }
 }
-
-
-
-
-
-
 
 let allSelected = false;
 
