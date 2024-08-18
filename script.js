@@ -87,56 +87,71 @@ async function fetchRepos() {
     }
 }
 
-
 async function bulkAction(action) {
     const checkedBoxes = document.querySelectorAll('input[type="checkbox"]:checked');
     const username = document.getElementById('username').value;
     const token = document.getElementById('token').value;
 
-    for (let checkbox of checkedBoxes) {
-        const repoName = checkbox.dataset.reponame;
+    // Disable buttons during the bulk action to prevent multiple requests
+    const buttons = document.querySelectorAll('.header-actions button');
+    buttons.forEach(button => button.disabled = true);
 
-        try {
-            if (action === 'private') {
-                await fetch(`https://api.github.com/repos/${username}/${repoName}`, {
-                    method: 'PATCH',
-                    headers: {
-                        'Authorization': `Basic ${btoa(username + ':' + token)}`,
-                        'Accept': 'application/vnd.github.v3+json',
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ private: true })
-                });
-                console.log(`Repo ${repoName} ${translations['en'].successPrivate}`);
-            } else if (action === 'public') {
-                await fetch(`https://api.github.com/repos/${username}/${repoName}`, {
-                    method: 'PATCH',
-                    headers: {
-                        'Authorization': `Basic ${btoa(username + ':' + token)}`,
-                        'Accept': 'application/vnd.github.v3+json',
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ private: false })
-                });
-                console.log(`Repo ${repoName} ${translations['en'].successPublic}`);
-            } else if (action === 'delete') {
-                await fetch(`https://api.github.com/repos/${username}/${repoName}`, {
-                    method: 'DELETE',
-                    headers: {
-                        'Authorization': `Basic ${btoa(username + ':' + token)}`,
-                        'Accept': 'application/vnd.github.v3+json'
-                    }
-                });
-                console.log(`Repo ${repoName} ${translations['en'].successDelete}`);
+    try {
+        for (let checkbox of checkedBoxes) {
+            const repoName = checkbox.dataset.reponame;
+
+            try {
+                if (action === 'private') {
+                    await fetch(`https://api.github.com/repos/${username}/${repoName}`, {
+                        method: 'PATCH',
+                        headers: {
+                            'Authorization': `Basic ${btoa(username + ':' + token)}`,
+                            'Accept': 'application/vnd.github.v3+json',
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ private: true })
+                    });
+                    console.log(`Repo ${repoName} ${translations['en'].successPrivate}`);
+                } else if (action === 'public') {
+                    await fetch(`https://api.github.com/repos/${username}/${repoName}`, {
+                        method: 'PATCH',
+                        headers: {
+                            'Authorization': `Basic ${btoa(username + ':' + token)}`,
+                            'Accept': 'application/vnd.github.v3+json',
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ private: false })
+                    });
+                    console.log(`Repo ${repoName} ${translations['en'].successPublic}`);
+                } else if (action === 'delete') {
+                    await fetch(`https://api.github.com/repos/${username}/${repoName}`, {
+                        method: 'DELETE',
+                        headers: {
+                            'Authorization': `Basic ${btoa(username + ':' + token)}`,
+                            'Accept': 'application/vnd.github.v3+json'
+                        }
+                    });
+                    console.log(`Repo ${repoName} ${translations['en'].successDelete}`);
+                }
+            } catch (error) {
+                console.error(`Error performing ${action} on repo ${repoName}:`, error);
             }
-        } catch (error) {
-            console.error(`Error performing ${action} on repo ${repoName}:`, error);
         }
-    }
 
-    alert(translations[document.getElementById('language').value].bulkActionCompleted);
-    fetchRepos(); // Refresh the lists after bulk actions
+        alert(translations[document.getElementById('language').value].bulkActionCompleted);
+        fetchRepos(); // Refresh the lists after bulk actions
+    } catch (error) {
+        console.error('Error performing bulk action:', error);
+    } finally {
+        // Re-enable buttons after the bulk action is complete
+        buttons.forEach(button => button.disabled = false);
+    }
 }
+
+
+
+
+
 
 
 let allSelected = false;
