@@ -1,49 +1,236 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="tr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GitHub Repo Manager</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <meta name="description" content="GitHub depolarınızı modern bir shadcn/ui deneyimiyle analiz edin, filtreleyin ve toplu yönetin.">
+    <title>GitHub Repo Manager Pro</title>
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <div class="header">
-        <div class="header-inputs">
-            <label for="username">GitHub Kullanıcı Adı:</label>
-            <input type="text" id="username" placeholder="Kullanıcı adınızı girin">
-            <label for="token">GitHub Token:</label>
-            <input type="password" id="token" placeholder="Tokenınızı girin">
-            <button onclick="fetchRepos()">Repoları Getir</button>
-        </div>
-        <div class="language-select">
-            <img src="https://www.countryflags.io/tr/flat/24.png" alt="Türkçe" onclick="changeLanguage('tr')">
-            <img src="https://www.countryflags.io/us/flat/24.png" alt="English" onclick="changeLanguage('en')">
-            <select id="language" onchange="changeLanguage()">
-                <option value="tr">Türkçe</option>
-                <option value="en">English</option>
-            </select>
-        </div>
-        <div class="header-actions">
-            <button onclick="bulkAction('private')">Seçilenleri Private Yap</button>
-            <button onclick="bulkAction('public')">Seçilenleri Public Yap</button>
-            <button onclick="bulkAction('delete')">Seçilenleri Sil</button>
-            <button id="selectAllButton" onclick="toggleSelectAll()">Tümünü Seç</button>
-        </div>
-    </div>
-    <div class="main">
-        <div class="repo-container">
-            <div class="repo-list">
-                <h2 id="public-heading">Public Repos</h2>
-                <div id="public-repos"></div>
+    <div class="app-shell">
+        <aside class="sidebar card" aria-label="Workspace navigation">
+            <a class="brand" href="#top" aria-label="GitHub Repo Manager Pro">
+                <span class="brand-icon"><i class="fa-brands fa-github"></i></span>
+                <span>
+                    <strong>Repo Manager</strong>
+                    <small>Pro dashboard</small>
+                </span>
+            </a>
+
+            <nav class="nav-list" aria-label="Quick sections">
+                <a href="#overview" class="nav-item active"><i class="fa-solid fa-chart-pie"></i><span data-i18n="navOverview">Overview</span></a>
+                <a href="#repositories" class="nav-item"><i class="fa-solid fa-code-branch"></i><span data-i18n="navRepos">Repositories</span></a>
+                <a href="#activity" class="nav-item"><i class="fa-solid fa-clock-rotate-left"></i><span data-i18n="navActivity">Activity</span></a>
+                <a href="#tips" class="nav-item"><i class="fa-solid fa-shield-halved"></i><span data-i18n="navTips">Safety</span></a>
+            </nav>
+
+            <div class="sidebar-footer muted-card">
+                <span class="status-dot"></span>
+                <div>
+                    <strong data-i18n="localOnlyTitle">Local-first</strong>
+                    <p data-i18n="localOnlyText">Tokens stay in this browser session unless you choose to save them.</p>
+                </div>
             </div>
-            <div class="repo-list">
-                <h2 id="private-heading">Private Repos</h2>
-                <div id="private-repos"></div>
-            </div>
-        </div>
+        </aside>
+
+        <main class="main" id="top">
+            <header class="hero card">
+                <div class="hero-copy">
+                    <div class="eyebrow"><i class="fa-solid fa-sparkles"></i><span data-i18n="eyebrow">shadcn/ui inspired interface</span></div>
+                    <h1 data-i18n="heroTitle">Control your GitHub repos from one focused dashboard.</h1>
+                    <p data-i18n="heroDescription">Fetch all repositories, inspect health signals, select by filters, and run safer bulk visibility or deletion actions.</p>
+                    <div class="hero-actions">
+                        <button class="btn btn-primary" id="fetchReposButton" type="button" onclick="fetchRepos()">
+                            <i class="fa-solid fa-rotate"></i><span data-i18n="fetchRepos">Fetch Repos</span>
+                        </button>
+                        <button class="btn btn-secondary" type="button" onclick="loadDemoData()">
+                            <i class="fa-solid fa-wand-magic-sparkles"></i><span data-i18n="loadDemo">Load Demo</span>
+                        </button>
+                    </div>
+                </div>
+
+                <section class="auth-panel" aria-labelledby="connection-title">
+                    <div class="section-heading compact">
+                        <span class="icon-pill"><i class="fa-solid fa-plug"></i></span>
+                        <div>
+                            <h2 id="connection-title" data-i18n="connectionTitle">GitHub connection</h2>
+                            <p data-i18n="connectionSubtitle">Use a fine-grained token with repo permissions.</p>
+                        </div>
+                    </div>
+                    <div class="form-grid">
+                        <label class="field" for="username">
+                            <span data-i18n="username">GitHub Username</span>
+                            <input class="input" type="text" id="username" autocomplete="username" placeholder="octocat">
+                        </label>
+                        <label class="field" for="token">
+                            <span data-i18n="token">GitHub Token</span>
+                            <div class="input-with-action">
+                                <input class="input" type="password" id="token" autocomplete="off" placeholder="github_pat_...">
+                                <button class="icon-button" type="button" onclick="toggleTokenVisibility()" aria-label="Toggle token visibility"><i class="fa-regular fa-eye"></i></button>
+                            </div>
+                        </label>
+                    </div>
+                    <div class="control-row">
+                        <label class="checkbox-line" for="rememberToken">
+                            <input type="checkbox" id="rememberToken">
+                            <span data-i18n="rememberToken">Remember token locally</span>
+                        </label>
+                        <label class="field inline" for="language">
+                            <span data-i18n="languageLabel">Language</span>
+                            <select class="select" id="language" onchange="changeLanguage()">
+                                <option value="tr">Türkçe</option>
+                                <option value="en">English</option>
+                            </select>
+                        </label>
+                    </div>
+                </section>
+            </header>
+
+            <section class="stats-grid" id="overview" aria-label="Repository overview metrics">
+                <article class="stat-card card">
+                    <span class="stat-icon"><i class="fa-solid fa-database"></i></span>
+                    <p data-i18n="totalRepos">Total repos</p>
+                    <strong id="stat-total">0</strong>
+                    <small id="stat-total-detail" data-i18n="awaitingData">Awaiting data</small>
+                </article>
+                <article class="stat-card card">
+                    <span class="stat-icon public"><i class="fa-solid fa-globe"></i></span>
+                    <p data-i18n="publicRepos">Public repos</p>
+                    <strong id="stat-public">0</strong>
+                    <small data-i18n="visibleToWorld">Visible to everyone</small>
+                </article>
+                <article class="stat-card card">
+                    <span class="stat-icon private"><i class="fa-solid fa-lock"></i></span>
+                    <p data-i18n="privateRepos">Private repos</p>
+                    <strong id="stat-private">0</strong>
+                    <small data-i18n="restrictedAccess">Restricted access</small>
+                </article>
+                <article class="stat-card card">
+                    <span class="stat-icon attention"><i class="fa-solid fa-triangle-exclamation"></i></span>
+                    <p data-i18n="needsAttention">Needs attention</p>
+                    <strong id="stat-attention">0</strong>
+                    <small data-i18n="archivedForksEmpty">Archived, forks, or empty</small>
+                </article>
+            </section>
+
+            <section class="toolbar card" id="repositories" aria-label="Repository filters and actions">
+                <div class="section-heading">
+                    <span class="icon-pill"><i class="fa-solid fa-sliders"></i></span>
+                    <div>
+                        <h2 data-i18n="workspaceTitle">Repository workspace</h2>
+                        <p data-i18n="workspaceSubtitle">Search, filter, sort, select, export, and perform bulk actions.</p>
+                    </div>
+                </div>
+
+                <div class="filters-grid">
+                    <label class="field search-field" for="searchInput">
+                        <span data-i18n="searchLabel">Search repositories</span>
+                        <div class="input-with-icon">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                            <input class="input" type="search" id="searchInput" data-filter placeholder="Search by name, language, topic...">
+                        </div>
+                    </label>
+                    <label class="field" for="visibilityFilter">
+                        <span data-i18n="visibilityLabel">Visibility</span>
+                        <select class="select" id="visibilityFilter" data-filter>
+                            <option value="all" data-i18n="allRepos">All repos</option>
+                            <option value="public" data-i18n="publicOnly">Public only</option>
+                            <option value="private" data-i18n="privateOnly">Private only</option>
+                        </select>
+                    </label>
+                    <label class="field" for="languageFilter">
+                        <span data-i18n="languageFilterLabel">Language</span>
+                        <select class="select" id="languageFilter" data-filter>
+                            <option value="all" data-i18n="allLanguages">All languages</option>
+                        </select>
+                    </label>
+                    <label class="field" for="sortBy">
+                        <span data-i18n="sortLabel">Sort by</span>
+                        <select class="select" id="sortBy" data-filter>
+                            <option value="updated" data-i18n="sortUpdated">Recently updated</option>
+                            <option value="name" data-i18n="sortName">Name</option>
+                            <option value="stars" data-i18n="sortStars">Stars</option>
+                            <option value="size" data-i18n="sortSize">Size</option>
+                        </select>
+                    </label>
+                </div>
+
+                <div class="bulk-bar">
+                    <div class="selection-summary">
+                        <strong id="selectedCount">0</strong>
+                        <span data-i18n="selectedRepos">selected repositories</span>
+                    </div>
+                    <div class="bulk-actions">
+                        <button class="btn btn-secondary" id="selectAllButton" type="button" onclick="toggleSelectAll()"><i class="fa-regular fa-square-check"></i><span data-i18n="selectAll">Select visible</span></button>
+                        <button class="btn btn-outline" type="button" onclick="clearSelection()"><i class="fa-solid fa-eraser"></i><span data-i18n="clearSelection">Clear</span></button>
+                        <button class="btn btn-outline" type="button" onclick="exportSelected('json')"><i class="fa-solid fa-file-code"></i><span>JSON</span></button>
+                        <button class="btn btn-outline" type="button" onclick="exportSelected('csv')"><i class="fa-solid fa-file-csv"></i><span>CSV</span></button>
+                        <button class="btn btn-warning" type="button" onclick="bulkAction('private')"><i class="fa-solid fa-lock"></i><span data-i18n="makePrivate">Make private</span></button>
+                        <button class="btn btn-success" type="button" onclick="bulkAction('public')"><i class="fa-solid fa-globe"></i><span data-i18n="makePublic">Make public</span></button>
+                        <button class="btn btn-danger" type="button" onclick="bulkAction('delete')"><i class="fa-solid fa-trash"></i><span data-i18n="delete">Delete</span></button>
+                    </div>
+                </div>
+            </section>
+
+            <section class="repo-board">
+                <div class="repo-list card">
+                    <div class="list-header">
+                        <div>
+                            <h2 id="public-heading" data-i18n="publicHeading">Public Repos</h2>
+                            <p id="public-count">0 repos</p>
+                        </div>
+                        <span class="badge public"><i class="fa-solid fa-globe"></i><span data-i18n="publicBadge">Public</span></span>
+                    </div>
+                    <div id="public-repos" class="repo-grid" aria-live="polite"></div>
+                </div>
+                <div class="repo-list card">
+                    <div class="list-header">
+                        <div>
+                            <h2 id="private-heading" data-i18n="privateHeading">Private Repos</h2>
+                            <p id="private-count">0 repos</p>
+                        </div>
+                        <span class="badge private"><i class="fa-solid fa-lock"></i><span data-i18n="privateBadge">Private</span></span>
+                    </div>
+                    <div id="private-repos" class="repo-grid" aria-live="polite"></div>
+                </div>
+            </section>
+
+            <section class="details-grid">
+                <article class="card" id="activity">
+                    <div class="section-heading compact">
+                        <span class="icon-pill"><i class="fa-solid fa-list-check"></i></span>
+                        <div>
+                            <h2 data-i18n="activityTitle">Action timeline</h2>
+                            <p data-i18n="activitySubtitle">Recent fetch, export, and bulk operation events.</p>
+                        </div>
+                    </div>
+                    <ol id="activityLog" class="activity-log">
+                        <li class="empty-state" data-i18n="noActivity">No activity yet.</li>
+                    </ol>
+                </article>
+
+                <article class="card" id="tips">
+                    <div class="section-heading compact">
+                        <span class="icon-pill"><i class="fa-solid fa-shield-heart"></i></span>
+                        <div>
+                            <h2 data-i18n="safetyTitle">Safety checklist</h2>
+                            <p data-i18n="safetySubtitle">Recommended guardrails before destructive changes.</p>
+                        </div>
+                    </div>
+                    <ul class="checklist">
+                        <li><i class="fa-solid fa-circle-check"></i><span data-i18n="tipFineToken">Prefer fine-grained personal access tokens.</span></li>
+                        <li><i class="fa-solid fa-circle-check"></i><span data-i18n="tipExport">Export selected repositories before bulk changes.</span></li>
+                        <li><i class="fa-solid fa-circle-check"></i><span data-i18n="tipDelete">Deletion always requires a confirmation phrase.</span></li>
+                    </ul>
+                </article>
+            </section>
+        </main>
     </div>
 
+    <div id="toastRegion" class="toast-region" aria-live="polite" aria-atomic="true"></div>
     <script src="script.js"></script>
 </body>
 </html>

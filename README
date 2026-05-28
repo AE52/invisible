@@ -1,79 +1,59 @@
-# GitHub Repo Manager
+# GitHub Repo Manager Pro
 
-## Overview
-GitHub Repo Manager is a web application designed to help you manage your GitHub repositories. You can easily fetch your repositories, change their visibility (public/private), and delete them in bulk.
+GitHub Repo Manager Pro is a static, browser-based dashboard for auditing and managing GitHub repositories. The interface has been redesigned with a shadcn/ui-inspired visual system: card surfaces, command-style filters, badges, destructive-action guardrails, toasts, and responsive dashboard layouts.
 
-## Features
-- **Fetch Repositories:** Get a list of your GitHub repositories.
-- **Change Visibility:** Bulk change the visibility of selected repositories between public and private.
-- **Delete Repositories:** Delete selected repositories in bulk.
-- **Language Support:** Supports English and Turkish.
+## Highlights
+
+- **Modern dashboard UI:** shadcn/ui-style cards, buttons, badges, inputs, navigation, toast notifications, and responsive layouts.
+- **Repository analytics:** total, public, private, and attention-needed counters for archived, forked, or empty repositories.
+- **Full repository fetching:** paginates through `/user/repos` so accounts with more than 100 repositories are supported.
+- **Powerful workspace filters:** search by name, description, language, or topic; filter by visibility and language; sort by update date, name, stars, or size.
+- **Safer bulk actions:** selected repositories can be made private/public or deleted after an explicit confirmation phrase.
+- **Export workflows:** selected repositories can be exported as JSON or CSV before changes.
+- **Bilingual UI:** Turkish and English translations are included.
+- **Local-first credentials:** username is remembered locally; token storage is opt-in and can remain session-only.
+- **Demo mode:** load sample repositories to preview the UI without a GitHub token.
 
 ## Getting Started
 
 ### Prerequisites
-- A GitHub account with a personal access token.
-- Basic knowledge of HTML and JavaScript.
+
+- A modern browser.
+- A GitHub account.
+- A fine-grained personal access token with the repository permissions required for the actions you plan to run.
 
 ### Usage
-1. **Enter GitHub Credentials:**
-   - Enter your GitHub username and personal access token in the designated fields.
 
-2. **Fetch Repositories:**
-   - Click on "Fetch Repos" to retrieve your repositories.
+1. Open `index.html` in your browser or serve the folder with a local static server.
+2. Enter your GitHub username and token.
+3. Click **Repoları Getir / Fetch Repos** to load repositories.
+4. Use the filters and sorting controls to narrow the workspace.
+5. Select repositories and optionally export them as JSON or CSV.
+6. Run bulk visibility or deletion actions. Visibility changes require typing `CONFIRM`; deletion requires typing `DELETE`.
 
-3. **Select Repositories:**
-   - Check the boxes next to the repositories you want to manage.
+### Local static server
 
-4. **Perform Actions:**
-   - Use the buttons to change the visibility (Public/Private) or delete selected repositories.
-   - Click "Select All" to select all repositories.
+```bash
+python3 -m http.server 4173
+```
 
-5. **Change Language:**
-   - Choose your preferred language from the language selector.
+Then visit `http://127.0.0.1:4173`.
+
+## Security Notes
+
+- Tokens are sent directly from your browser to GitHub's API.
+- Token storage is disabled unless **Remember token locally** is checked.
+- Prefer fine-grained tokens and grant only the minimum permissions required.
+- Always export selected repositories before destructive bulk operations.
+
+## Türkçe Özet
+
+GitHub Repo Manager Pro, GitHub repolarınızı modern bir panel üzerinden analiz etmenizi ve toplu yönetmenizi sağlar. Arama, filtreleme, sıralama, JSON/CSV dışa aktarma, güvenli toplu görünürlük değiştirme ve silme işlemleri içerir. Arayüz shadcn/ui yaklaşımından ilham alan kartlar, butonlar, rozetler, toast bildirimleri ve responsive düzenlerle güçlendirilmiştir.
 
 ## License
+
 This project is licensed under the MIT License.
 
 ## Contact
+
 For any questions or issues, please contact [eren.sistemmap@gmail.com](mailto:eren.sistemmap@gmail.com).
-
-# GitHub Repo Yönetici
-
-## Genel Bakış
-GitHub Repo Yönetici, GitHub repositorilerinizi yönetmenize yardımcı olan bir web uygulamasıdır. Repositorilerinizi kolayca getirebilir, görünürlüklerini (açık/özel) topluca değiştirebilir ve topluca silebilirsiniz.
-
-## Özellikler
-- **Repo Getirme:** GitHub repositorilerinizi listeleyin.
-- **Görünürlük Değiştirme:** Seçili repositorilerin görünürlüğünü topluca açık ve özel olarak değiştirin.
-- **Repo Silme:** Seçili repositorileri topluca silin.
-- **Dil Desteği:** İngilizce ve Türkçe desteği sağlar.
-
-## Başlarken
-
-### Gereksinimler
-- GitHub hesabı ve kişisel erişim tokeni.
-- Temel HTML ve JavaScript bilgisi.
-
-### Kullanım
-1. **GitHub Kimlik Bilgilerini Girin:**
-   - GitHub kullanıcı adınızı ve kişisel erişim tokeninizi ilgili alanlara girin.
-
-2. **Repositorileri Getirin:**
-   - "Repoları Getir" butonuna tıklayarak repositorilerinizi alın.
-
-3. **Repositorileri Seçin:**
-   - Yönetmek istediğiniz repositorilerin yanındaki kutuları işaretleyin.
-
-4. **Eylemleri Gerçekleştirin:**
-   - Seçili repositorilerin görünürlüğünü (Açık/Özel) değiştirmek veya silmek için butonları kullanın.
-   - "Tümünü Seç" butonuna tıklayarak tüm repositorileri seçin.
-
-5. **Dil Değiştir:**
-   - Tercih ettiğiniz dili dil seçicisinden seçin.
-
-## Lisans
-Bu proje MIT Lisansı altında lisanslanmıştır.
-
-## İletişim
-Herhangi bir soru veya sorun için lütfen [eren.sistemmap@gmail.com](mailto:eren.sistemmap@gmail.com) adresiyle iletişime geçin.
